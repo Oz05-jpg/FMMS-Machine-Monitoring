@@ -1,4 +1,6 @@
-﻿namespace FMMSMachineMonitoring.Models
+﻿using FMMSMachineMonitoring.Models.Enums;
+
+namespace FMMSMachineMonitoring.Models
 {
     public class Machine
     {

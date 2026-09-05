@@ -1,4 +1,4 @@
-﻿namespace FMMSMachineMonitoring.Models
+﻿namespace FMMSMachineMonitoring.Models.Enums
 {
     public enum MachineStatus
     {
