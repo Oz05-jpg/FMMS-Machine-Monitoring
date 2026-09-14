@@ -18,9 +18,15 @@ Model reference: [Software Development Life Cycle (SDLC)](https://bigwater.consu
 ## Rules
 
 1. Every new FM-TICKET header states its phase: `🎫 FM-TICKET #003 — [Build] IoT Refresh`.
-2. Design isn't closed after #001 — a new entity (e.g. the PM schedule in #004) gets its data model added to `architecture.md`/an ER diagram before the ticket's code, at the same light weight as today (not full IEEE 1016 like `fmms-system-design` — that formality belongs to the separate design-spec repo, not here).
+2. Design isn't closed after #001 — a new entity (e.g. the PM schedule in #004) gets its data model added to `architecture.md`/an ER diagram **after the ticket's code, during Post-Coding Flow (same commit as the feature)** — not before. Doc-before-code was the original draft of this rule; SAGE audit (2026-09-14) flagged it as a phase-gate in disguise that hands "คิดมากก่อนเริ่ม" a built-in excuse to open a session with documentation instead of code, right on the two tickets (#003, #004) that introduce new entities. Code first, doc same session.
 3. Testing opens as its own named phase once all 4 V1 features are built (before the "Deploy" checklist item) — this does not pause writing unit tests per ticket in the meantime, which continues as it already has.
 4. Maintenance = post-deploy work (bug fixes, small features) — still logged as FM-TICKETs, phase-tagged `[Maintenance]`. This phase has no end date, same as the portfolio-doc workstream.
+
+## Pacing constraint (added after SAGE audit, 2026-09-14)
+
+FMMS has not landed a single ticket on a normal weekday in the last 5 tracked days (2026-09-07 → 09-11) — SENSEI's YokohamaMaintenanceSystem takes the weekday learning slot every time it competes. Both FM-TICKET #001 and #002 only happened on days off (2026-09-05, 09-06), and the most recent weekend (09-12/09-13) produced zero FMMS tickets. This isn't a lack-of-plan problem — it's a lack-of-locked-slot problem.
+
+**Rule: FMMS runs on a holiday/rest-day budget only, not weekday time.** 3 Build tickets remain (#003, #004, #005) + Testing + Deployment — feasible inside a handful of rest days, but only if the next rest day is actually spent on FM-TICKET #003 code, not on more documentation. Next rest day = FM-TICKET #003, code first.
 
 ## Why overlay, not replace
 
