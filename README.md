@@ -45,15 +45,21 @@ V1 uses **mock sensor data** (a script simulating temperature/vibration/pressure
 
 Chosen to match the tech stack in the reference job posting, not a generic default — no SPA framework, no microservices; a single MVC app one developer can own end to end.
 
+## Methodology
+
+Built against the classic 6-phase SDLC (Planning & Requirement Analysis → Requirements → Design → Build → Testing → Deployment & Maintenance) as a documentation overlay on top of the ticket-based teaching workflow used to write the code. Full phase map, current status per phase, and the artifact backing each one: [`docs/sdlc-plan.md`](docs/sdlc-plan.md).
+
 ## Status
 
-- [x] Domain research, business context, and process flowcharts
-- [x] Requirement scope and user roles defined
-- [ ] Database design (ER diagram) — in progress
-- [ ] Backend (models, controllers, EF Core)
-- [ ] Frontend (dashboard, forms, views)
-- [ ] Mock IoT data + live dashboard updates
-- [ ] Deploy + demo video
+- [x] **[Planning]** Domain research, business context, and process flowcharts
+- [x] **[Requirements]** Requirement scope and user roles defined
+- [ ] **[Design]** Database design (ER diagram) — schema exists in EF Core migrations, standalone diagram still pending
+- [x] **[Build]** Machine Master CRUD
+- [x] **[Build]** Work Order Management (+ Technician)
+- [ ] **[Build]** Preventive Maintenance
+- [ ] **[Build]** Dashboard & Reports + mock IoT data
+- [ ] **[Testing]** Integration/regression pass across all 4 V1 features
+- [ ] **[Deployment]** Deploy + demo video
 
 ## Diagrams
 
