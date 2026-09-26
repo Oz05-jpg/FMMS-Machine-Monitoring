@@ -22,12 +22,6 @@ Model reference: [Software Development Life Cycle (SDLC)](https://bigwater.consu
 3. Testing opens as its own named phase once all 4 V1 features are built (before the "Deploy" checklist item) — this does not pause writing unit tests per ticket in the meantime, which continues as it already has.
 4. Maintenance = post-deploy work (bug fixes, small features) — still logged as FM-TICKETs, phase-tagged `[Maintenance]`. This phase has no end date, same as the portfolio-doc workstream.
 
-## Pacing constraint (added after SAGE audit, 2026-09-14)
-
-FMMS has not landed a single ticket on a normal weekday in the last 5 tracked days (2026-09-07 → 09-11) — SENSEI's MaintenanceManagementSystem takes the weekday learning slot every time it competes. Both FM-TICKET #001 and #002 only happened on days off (2026-09-05, 09-06), and the most recent weekend (09-12/09-13) produced zero FMMS tickets. This isn't a lack-of-plan problem — it's a lack-of-locked-slot problem.
-
-**Rule: FMMS runs on a holiday/rest-day budget only, not weekday time.** 3 Build tickets remain (#003, #004, #005) + Testing + Deployment — feasible inside a handful of rest days, but only if the next rest day is actually spent on FM-TICKET #003 code, not on more documentation. Next rest day = FM-TICKET #003, code first.
-
 ## Why overlay, not replace
 
 The pedagogy (Session Opener, Exercise Levels, explain-back, Post-Coding Flow) is what makes the code defensible in an interview — that stays untouched. SDLC phase-tagging is a documentation layer on top, so the project's own README/commit history reads as "built via a deliberate SDLC process" rather than only "a series of tickets," which is a stronger interview narrative for a system-analyst-adjacent role.
