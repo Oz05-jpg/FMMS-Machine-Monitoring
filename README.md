@@ -2,7 +2,7 @@
 
 A full-stack maintenance work-order system for a tire manufacturing plant — machine registry, work orders, preventive maintenance scheduling, and a reporting dashboard, with mock IoT sensor data standing in for real PLC/Node-RED input in V1.
 
-This is a self-directed portfolio project, not a commissioned or deployed system. It models the operational needs described in a real manufacturing-plant IT Developer job posting — [Yokohama Tire Manufacturing (Thailand), JobThai #1871739](https://www.jobthai.com/th/job/1871739) — as a realistic scope to build against. It has no affiliation with that company and was never assigned or delivered to them.
+This is a self-directed portfolio project, not a commissioned or deployed system. It models the operational needs described in real manufacturing-plant IT Developer job postings in Thailand, used as a realistic scope to build against. It has no affiliation with any company and was never assigned or delivered to one.
 
 ## Why this exists
 
