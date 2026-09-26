@@ -18,7 +18,7 @@ Model reference: [Software Development Life Cycle (SDLC)](https://bigwater.consu
 ## Rules
 
 1. Every new FM-TICKET header states its phase: `🎫 FM-TICKET #003 — [Build] IoT Refresh`.
-2. Design isn't closed after #001 — a new entity (e.g. the PM schedule in #004) gets its data model added to `architecture.md`/an ER diagram **after the ticket's code, during Post-Coding Flow (same commit as the feature)** — not before. Doc-before-code was the original draft of this rule; SAGE audit (2026-09-14) flagged it as a phase-gate in disguise that hands "คิดมากก่อนเริ่ม" a built-in excuse to open a session with documentation instead of code, right on the two tickets (#003, #004) that introduce new entities. Code first, doc same session.
+2. Design isn't closed after #001 — a new entity (e.g. the PM schedule in #004) gets its data model added to `architecture.md`/an ER diagram **after the ticket's code, during Post-Coding Flow (same commit as the feature)** — not before. Code first, doc in the same commit, so documentation never becomes a gate in front of the work.
 3. Testing opens as its own named phase once all 4 V1 features are built (before the "Deploy" checklist item) — this does not pause writing unit tests per ticket in the meantime, which continues as it already has.
 4. Maintenance = post-deploy work (bug fixes, small features) — still logged as FM-TICKETs, phase-tagged `[Maintenance]`. This phase has no end date, same as the portfolio-doc workstream.
 
