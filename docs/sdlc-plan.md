@@ -10,7 +10,7 @@ Model reference: [Software Development Life Cycle (SDLC)](https://bigwater.consu
 |---|---|---|---|
 | 1. Planning & Requirement Analysis | ✅ Done | [README.md](../README.md) — domain, "Why this exists", scope built against real manufacturing-plant IT Developer postings in Thailand | before #001 |
 | 2. Defining Requirements | ✅ Done | [requirements.md](requirements.md) — user stories, 4 features × 4 personas | before #001 |
-| 3. Design | 🟡 Partial | [architecture.md](architecture.md) — system/data-flow/workflow diagrams. ER schema exists only as EF Core migrations, not yet a standalone diagram | before #001, then re-opens per new entity |
+| 3. Design | ✅ Done | [architecture.md](architecture.md) — system/data-flow/workflow diagrams. [er-diagram.md](er-diagram.md) — ER schema for Machine, Technician, WorkOrder | before #001, then re-opens per new entity |
 | 4. Build | 🔵 In progress | #001 Machine CRUD ✅ · #002 Work Order + Technician ✅ · #003 IoT refresh (next) · #004 Preventive Maintenance · #005 Dashboard & Reports | #001–#00X |
 | 5. Testing | ⬜ Not opened | Inline unit tests continue per ticket (same pattern as YMS TICKET #008/#020) — no dedicated integration/regression pass yet | opens after #005 |
 | 6. Deployment & Maintenance | ⬜ Not opened | README checklist item "Deploy + demo video" | after Testing |

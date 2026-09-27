@@ -6,9 +6,9 @@ namespace FMMSMachineMonitoring.Models
     {
         public int Id { get; set; }
         public int MachineId { get; set; }
-        public Machine? Machine { get; set; }  // ? FK มากจาก MachineId เป็น optional
+        public Machine? Machine { get; set; }  //Machine? is a nullable reference type, allowing it to be null
         public int? TechnicianId { get; set; }
-        public Technician? Technician { get; set; } // ? FK มากจาก TechnicianId เป็น optional
+        public Technician? Technician { get; set; } // Technician? is a nullable reference type, allowing it to be null
         public required string Description { get; set; }
 
         public UrgencyStatus Urgency { get; set; }
