@@ -53,7 +53,7 @@ Built against the classic 6-phase SDLC (Planning & Requirement Analysis → Requ
 
 - [x] **[Planning]** Domain research, business context, and process flowcharts
 - [x] **[Requirements]** Requirement scope and user roles defined
-- [x] **[Design]** Database design (ER diagram) — [`docs/er-diagram.md`](docs/er-diagram.md) (Machine, Technician, WorkOrder)
+- [x] **[Design]** Database design (ER diagram) — [`docs/er-diagram.md`](docs/er-diagram.md) (Machine, Technician, WorkOrder, SensorReading)
 - [x] **[Build]** Machine Master CRUD
 - [x] **[Build]** Work Order Management (+ Technician)
 - [ ] **[Build]** Preventive Maintenance

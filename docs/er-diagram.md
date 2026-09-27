@@ -4,6 +4,7 @@
 erDiagram
     MACHINE    ||--o{ WORKORDER : has
     TECHNICIAN |o--o{ WORKORDER : has
+    MACHINE ||--o{ SENSORREADING : records
 
     MACHINE {
         int Id PK
@@ -27,5 +28,12 @@ erDiagram
         UrgencyStatus Urgency
         DateTime CreatedDate
         DateTime ClosedDate
+    }
+    SENSORREADING {
+        int Id PK
+        int MachineId FK
+        SensorChannel Channel
+        double Value
+        DateTime DateTime
     }
 ```
