@@ -1,5 +1,6 @@
 
 using FMMSMachineMonitoring.Data;
+using FMMSMachineMonitoring.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,8 @@ builder.Services.AddDbContext<AppDbContext>(option =>
         (builder.Configuration.GetConnectionString
         ("DefaultConnection")));
 
+// Service
+builder.Services.AddHostedService<SensorSimulationService>();
 
 var app = builder.Build();
 
