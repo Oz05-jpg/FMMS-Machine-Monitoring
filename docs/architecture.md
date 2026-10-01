@@ -25,3 +25,7 @@ The full lifecycle a problem goes through, across 4 actors: **Operator/System** 
 ## Threshold reference
 
 Full per-channel warning/critical values for all 9 monitored sensor channels (with the derivation rule for values not sourced from the original architecture sketch) live in the design-spec repo: [`fmms-system-design/01-SRS.md` §2.1](https://github.com/Oz05-jpg/fmms-system-design/blob/main/01-SRS.md).
+
+## UI reference (for #005 Dashboard & Reports)
+
+[MMS Live Demo v2](https://claude.ai/design/p/7f53dce8-fbfb-4a57-84df-a8744a2d6ac3?file=MMS+Live+Demo+v2.dc.html) — Claude Design mockup for the target UI, saved 2026-09-30. Reference only for layout/visual direction when #005 opens; Razor views still get built through teaching mode (guided, not generated wholesale) per the project's no-AI-generated-code rule.
