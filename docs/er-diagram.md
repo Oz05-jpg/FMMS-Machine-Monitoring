@@ -5,6 +5,7 @@ erDiagram
     MACHINE    ||--o{ WORKORDER : has
     TECHNICIAN |o--o{ WORKORDER : has
     MACHINE ||--o{ SENSORREADING : records
+    MACHINE ||--o{ ALERT : triggers
 
     MACHINE {
         int Id PK
@@ -35,5 +36,14 @@ erDiagram
         SensorChannel Channel
         double Value
         DateTime DateTime
+    }
+    ALERT {
+        int Id PK
+        int MachineId FK
+        SensorChannel Channel
+        double Value
+        double Threshold
+        AlertSeverity Severity
+        DateTime DetectedAt
     }
 ```

@@ -34,6 +34,23 @@ namespace FMMSMachineMonitoring.Services
             var result = normal * (1 + variance);
             return result;
         }
+
+        private (double Warning, double Critical, bool IsHighDirection) GetThresholds(SensorChannel channel)
+        {
+            return channel switch
+            {
+                SensorChannel.Temperature => (195, 200, true),
+                SensorChannel.Pressure => (180, 160, false),
+                SensorChannel.Vibration => (3.75, 5.0, true),
+                SensorChannel.HeaterZoneTemp => (180, 200, true),
+                SensorChannel.MotorCurrent => (46, 50, true),
+                SensorChannel.ScrewSpeed => (1300, 1150, false),
+                SensorChannel.BearingVibration => (3.4, 3.7, true),
+                SensorChannel.MotorTemp => (80, 85, true),
+                SensorChannel.PowerConsumption => (20, 22, true),
+                _ => throw new ArgumentOutOfRangeException(nameof(channel), $"Unexpected channel value: {channel}"),
+            };
+        }
         private readonly Random _random = new Random();
 
         public SensorSimulationService(IServiceScopeFactory serviceScopeFactory, ILogger<SensorSimulationService> logger)
@@ -59,6 +76,7 @@ namespace FMMSMachineMonitoring.Services
                         {
                             foreach (var channel in channels)
                             {
+                                //SensorReading ใหม่ถูกสร้างขึ้นและบันทึกลงในฐานข้อมูล
                                 var reading = new SensorReading
                                 {
                                     MachineId = machine.Id,
@@ -67,6 +85,35 @@ namespace FMMSMachineMonitoring.Services
                                     DateTime = DateTime.UtcNow
                                 };
                                 db.SensorReadings.Add(reading);
+
+                                //Alerting logic based on thresholds
+                                var (warning, critical, isHighDirection) = GetThresholds(channel);
+                                if (isHighDirection ? reading.Value > critical : reading.Value < critical)
+                                {
+                                    var alert = new Alert
+                                    {
+                                        MachineId = machine.Id,
+                                        Channel = channel,
+                                        Value = reading.Value,
+                                        Threshold = critical,
+                                        Severity = AlertSeverity.Critical,
+                                        DetectedAt = DateTime.UtcNow
+                                    };
+                                    db.Alerts.Add(alert);
+                                }
+                                else if (isHighDirection ? reading.Value > warning : reading.Value < warning)
+                                {
+                                    var alert = new Alert
+                                    {
+                                        MachineId = machine.Id,
+                                        Channel = channel,
+                                        Value = reading.Value,
+                                        Threshold = warning,
+                                        Severity = AlertSeverity.Warning,
+                                        DetectedAt = DateTime.UtcNow
+                                    };
+                                    db.Alerts.Add(alert);
+                                }
                             }
                         }
                         else
@@ -81,7 +128,6 @@ namespace FMMSMachineMonitoring.Services
                     _logger.LogError(ex, "An error occurred while simulating sensor readings.");
                 }
             }
-
         }
     }
 }

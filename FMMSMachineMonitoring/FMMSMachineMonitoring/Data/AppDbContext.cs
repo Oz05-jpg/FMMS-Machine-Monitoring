@@ -12,6 +12,7 @@ namespace FMMSMachineMonitoring.Data
         public DbSet<Technician> Technicians { get; set; }
         public DbSet<WorkOrder> WorkOrders { get; set; }
         public DbSet<SensorReading> SensorReadings { get; set; }
+        public DbSet<Alert> Alerts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
