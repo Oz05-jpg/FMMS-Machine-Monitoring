@@ -55,7 +55,7 @@ namespace FMMSMachineMonitoring.Services
 
         private readonly Dictionary<(int, SensorChannel), int> _values = new();
         private readonly Dictionary<(int, SensorChannel), int> _normalCounts = new(); //นับค่าปกติ
-
+        private readonly Dictionary<(int, SensorChannel), int> _warningAlertDurations = new(); //นับค่า warning
 
         public SensorSimulationService(IServiceScopeFactory serviceScopeFactory, ILogger<SensorSimulationService> logger)
         {
@@ -96,6 +96,7 @@ namespace FMMSMachineMonitoring.Services
                                     a.MachineId == machine.Id &&
                                     a.Channel == channel &&
                                     a.ClearedAt == null);
+
                                 //Alerting logic based on thresholds
                                 var (warning, critical, isHighDirection) = GetThresholds(channel);
 
@@ -108,18 +109,52 @@ namespace FMMSMachineMonitoring.Services
                                     _values.TryGetValue((machine.Id, channel), out int currentValue);
                                     int newValue = currentValue + 1;
                                     _values[(machine.Id, channel)] = newValue;
-
-                                    //Reset the normal count if the reading exceeds the warning threshold
                                     _normalCounts[(machine.Id, channel)] = 0;
+
                                     bool isCritical = isHighDirection ? reading.Value > critical : reading.Value < critical;
                                     var severity = isCritical ? AlertSeverity.Critical : AlertSeverity.Warning;
                                     var threshold = isCritical ? critical : warning;
 
                                     if (activeAlert != null)
                                     {
+                                        var previousSeverity = activeAlert.Severity;//เก็บค่า severity ก่อนหน้า
                                         activeAlert.Value = reading.Value;
                                         activeAlert.Threshold = threshold;
                                         activeAlert.Severity = severity;
+
+                                        if (severity != AlertSeverity.Warning)
+                                        {
+                                            _warningAlertDurations[(machine.Id, channel)] = 0; //รีเซ็ตค่า warning alert duration ถ้า severity ไม่ใช่ Warning
+
+                                        }
+
+
+                                        else
+                                        {
+                                            //FR-AL-050 นับรอบที่ Warning ค้างอยู่
+                                            _warningAlertDurations.TryGetValue((machine.Id, channel), out int warningDuration);
+                                            _warningAlertDurations[(machine.Id, channel)] = warningDuration + 1; //เพิ่มรอบที่ Warning ค้างอยู่
+
+                                            //FR-AL-070: สร้าง WO เมื่อ severity เปลี่ยนจาก Warning เป็น Critical
+                                            if (severity == AlertSeverity.Critical && previousSeverity != AlertSeverity.Critical)
+                                            {
+                                                bool hasExistingWorkOrder = await db.WorkOrders.AnyAsync(wo => wo.AlertId == activeAlert.Id && wo.ClosedDate == null);
+                                                //ถ้า severity เปลี่ยนจาก Warning เป็น Critical ให้สร้าง WorkOrder ใหม่
+                                                if (!hasExistingWorkOrder)
+                                                {
+                                                    var workOrderForCritical = new WorkOrder
+                                                    {
+                                                        MachineId = machine.Id,
+                                                        Alert = activeAlert,
+                                                        Description = $"Sensor {channel} exceeded critical threshold. Measured: {reading.Value:F2}, Threshold: {critical:F2}",
+                                                        Urgency = UrgencyStatus.Urgent,
+                                                        CreatedDate = DateTime.UtcNow
+                                                    };
+                                                    db.WorkOrders.Add(workOrderForCritical);
+                                                }
+                                            }
+
+                                        }
                                     }
                                     else if (newValue >= 3) //สร้าง Alert ถ้าเกิน warning >= 3 ครั้ง
                                     {
@@ -133,6 +168,30 @@ namespace FMMSMachineMonitoring.Services
                                             DetectedAt = DateTime.UtcNow
                                         };
                                         db.Alerts.Add(alert);
+
+                                        //FR-AL-050 นับรอบที่ Warning ค้างอยู่
+                                        if (severity == AlertSeverity.Warning)
+                                        {
+                                            _warningAlertDurations[(machine.Id, channel)] = 1; //เริ่มนับรอบ Warning
+                                        }
+                                        else
+                                        {
+                                            _warningAlertDurations[(machine.Id, channel)] = 0; //ไม่ใช่ Warning → รีเซ็ต
+                                        }
+
+                                        //Create a WorkOrder if the severity is Critical
+                                        if (severity == AlertSeverity.Critical)
+                                        {
+                                            var workOrder = new WorkOrder
+                                            {
+                                                MachineId = machine.Id,
+                                                Alert = alert,
+                                                Description = $"Sensor {channel} exceeded critical threshold. Measured: {reading.Value:F2}, Threshold: {critical:F2}",
+                                                Urgency = UrgencyStatus.Urgent,
+                                                CreatedDate = DateTime.UtcNow
+                                            };
+                                            db.WorkOrders.Add(workOrder);
+                                        }
                                     }
                                 }
                                 else
@@ -147,9 +206,45 @@ namespace FMMSMachineMonitoring.Services
                                     {
                                         activeAlert.ClearedAt = DateTime.UtcNow;
                                         _normalCounts[(machine.Id, channel)] = 0; // Reset the normal count after clearing the alert
+                                        _warningAlertDurations[(machine.Id, channel)] = 0; // Reset the warning duration count after clearing the alert
                                     }
                                 }
+                                // FR-AL-065: นับและเช็ค Warning duration (ทำงานทั้งรอบเกินและรอบปกติ)
+                                if (activeAlert != null && activeAlert.Severity == AlertSeverity.Warning && activeAlert.ClearedAt == null)
+                                {
+                                    // เพิ่มตัวนับเฉพาะรอบปกติ (รอบเกินเพิ่มไปแล้วในบล็อก if (isExceedingWarning))
+                                    if (!isExceedingWarning)
+                                    {
+                                        _warningAlertDurations.TryGetValue((machine.Id, channel), out int warningDuration);
+                                        _warningAlertDurations[(machine.Id, channel)] = warningDuration + 1;
+                                    }
 
+                                    // เช็คครบ 5 และสร้าง WO
+                                    if (_warningAlertDurations[(machine.Id, channel)] >= 5)
+                                    {
+                                        bool hasWarningWorkOrder = await db.WorkOrders.AnyAsync(wo => wo.AlertId == activeAlert.Id && wo.ClosedDate == null);
+                                        if (!hasWarningWorkOrder)
+                                        {
+                                            var urgency = machine.Code switch
+                                            {
+                                                "CP-001" => UrgencyStatus.High,
+                                                "EX-002" => UrgencyStatus.Medium,
+                                                "BM-001" => UrgencyStatus.Medium,
+                                                _ => UrgencyStatus.Medium
+                                            };
+
+                                            var workOrderForWarning = new WorkOrder
+                                            {
+                                                MachineId = machine.Id,
+                                                Alert = activeAlert,
+                                                Description = $"Sensor {channel} has been in WARNING state for 5 consecutive readings. Current value: {reading.Value:F2}, Threshold: {warning:F2}",
+                                                Urgency = urgency,
+                                                CreatedDate = DateTime.UtcNow
+                                            };
+                                            db.WorkOrders.Add(workOrderForWarning);
+                                        }
+                                    }
+                                }
                             }
                         }
                         else
