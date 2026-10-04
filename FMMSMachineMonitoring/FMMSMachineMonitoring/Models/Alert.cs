@@ -18,5 +18,6 @@ namespace FMMSMachineMonitoring.Models
         public AlertSeverity Severity { get; set; }
 
         public DateTime DetectedAt { get; set; }
+        public DateTime? ClearedAt { get; set; }
     }
 }

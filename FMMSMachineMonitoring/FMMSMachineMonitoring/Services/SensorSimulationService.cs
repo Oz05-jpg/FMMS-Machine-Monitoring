@@ -53,6 +53,10 @@ namespace FMMSMachineMonitoring.Services
         }
         private readonly Random _random = new Random();
 
+        private readonly Dictionary<(int, SensorChannel), int> _values = new();
+        private readonly Dictionary<(int, SensorChannel), int> _normalCounts = new(); //นับค่าปกติ
+
+
         public SensorSimulationService(IServiceScopeFactory serviceScopeFactory, ILogger<SensorSimulationService> logger)
         {
             _serviceScopeFactory = serviceScopeFactory;
@@ -72,6 +76,7 @@ namespace FMMSMachineMonitoring.Services
                     //ลูปผ่านเครื่องจักรทั้งหมดและสร้าง SensorReading สำหรับแต่ละ Channel
                     foreach (var machine in machines)
                     {
+
                         if (MachineChannels.TryGetValue(machine.Code, out var channels))
                         {
                             foreach (var channel in channels)
@@ -86,34 +91,65 @@ namespace FMMSMachineMonitoring.Services
                                 };
                                 db.SensorReadings.Add(reading);
 
+
+                                var activeAlert = await db.Alerts.FirstOrDefaultAsync(a =>
+                                    a.MachineId == machine.Id &&
+                                    a.Channel == channel &&
+                                    a.ClearedAt == null);
                                 //Alerting logic based on thresholds
                                 var (warning, critical, isHighDirection) = GetThresholds(channel);
-                                if (isHighDirection ? reading.Value > critical : reading.Value < critical)
+
+                                //เงื่อนไข เกิน warning เป็น boolean และ เกิน critical เป็น boolean เช่นกัน
+                                bool isExceedingWarning = isHighDirection ? reading.Value > warning : reading.Value < warning;
+
+                                if (isExceedingWarning)
                                 {
-                                    var alert = new Alert
+                                    //Update the count of readings for this machine and channel
+                                    _values.TryGetValue((machine.Id, channel), out int currentValue);
+                                    int newValue = currentValue + 1;
+                                    _values[(machine.Id, channel)] = newValue;
+
+                                    //Reset the normal count if the reading exceeds the warning threshold
+                                    _normalCounts[(machine.Id, channel)] = 0;
+                                    bool isCritical = isHighDirection ? reading.Value > critical : reading.Value < critical;
+                                    var severity = isCritical ? AlertSeverity.Critical : AlertSeverity.Warning;
+                                    var threshold = isCritical ? critical : warning;
+
+                                    if (activeAlert != null)
                                     {
-                                        MachineId = machine.Id,
-                                        Channel = channel,
-                                        Value = reading.Value,
-                                        Threshold = critical,
-                                        Severity = AlertSeverity.Critical,
-                                        DetectedAt = DateTime.UtcNow
-                                    };
-                                    db.Alerts.Add(alert);
+                                        activeAlert.Value = reading.Value;
+                                        activeAlert.Threshold = threshold;
+                                        activeAlert.Severity = severity;
+                                    }
+                                    else if (newValue >= 3) //สร้าง Alert ถ้าเกิน warning >= 3 ครั้ง
+                                    {
+                                        var alert = new Alert
+                                        {
+                                            MachineId = machine.Id,
+                                            Channel = channel,
+                                            Value = reading.Value,
+                                            Threshold = threshold,
+                                            Severity = severity,
+                                            DetectedAt = DateTime.UtcNow
+                                        };
+                                        db.Alerts.Add(alert);
+                                    }
                                 }
-                                else if (isHighDirection ? reading.Value > warning : reading.Value < warning)
+                                else
                                 {
-                                    var alert = new Alert
+                                    _values[(machine.Id, channel)] = 0; // Reset the count if the reading is within normal range
+                                    _normalCounts.TryGetValue((machine.Id, channel), out int normalCount);
+                                    int newNormalCount = normalCount + 1;
+                                    _normalCounts[(machine.Id, channel)] = newNormalCount;
+
+                                    //FR-AL-060 (Clear): ถ้าค่าปกติติดกัน >= 5 รอบและมี Acive Alert อยู่ -> Clear Alert
+                                    if (newNormalCount >= 5 && activeAlert != null)
                                     {
-                                        MachineId = machine.Id,
-                                        Channel = channel,
-                                        Value = reading.Value,
-                                        Threshold = warning,
-                                        Severity = AlertSeverity.Warning,
-                                        DetectedAt = DateTime.UtcNow
-                                    };
-                                    db.Alerts.Add(alert);
+                                        activeAlert.ClearedAt = DateTime.UtcNow;
+                                        _normalCounts[(machine.Id, channel)] = 0; // Reset the normal count after clearing the alert
+                                    }
                                 }
+
                             }
                         }
                         else
