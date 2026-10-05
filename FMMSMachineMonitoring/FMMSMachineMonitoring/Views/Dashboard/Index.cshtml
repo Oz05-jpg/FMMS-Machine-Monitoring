@@ -1,0 +1,30 @@
+﻿@model FMMSMachineMonitoring.Models.DashboardViewModel
+<h1>FMMS Dashboard</h1>
+@foreach (var machine in Model.Machines)
+{
+    <div class="machine-card">
+        <h2>@machine.Name (@machine.Code)</h2>
+        <p>Model: @machine.Model</p>
+        <p>Location: @machine.Location</p>
+        <p>Install Date: @machine.InstallDate.ToShortDateString()</p>
+        <p>Status: @machine.Status</p>
+    </div>
+}
+
+<table>
+    <thead>
+        <tr>
+            <th>Urgency</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OpenWorkOrderCounts)
+        {
+            <tr>
+                <td>@item.Key</td>
+                <td>@item.Value</td>
+            </tr>
+        }
+    </tbody>
+</table>  
