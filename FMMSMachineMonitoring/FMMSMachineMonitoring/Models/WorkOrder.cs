@@ -15,6 +15,8 @@ namespace FMMSMachineMonitoring.Models
 
         public UrgencyStatus Urgency { get; set; }
 
+        public WorkOrderType Type { get; set; }
+
         public DateTime CreatedDate { get; set; }
 
         public DateTime? ClosedDate { get; set; }

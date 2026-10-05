@@ -16,6 +16,8 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 
 // Service
 builder.Services.AddHostedService<SensorSimulationService>();
+builder.Services.AddHostedService<PreventiveMaintenanceService>();
+
 
 var app = builder.Build();
 
