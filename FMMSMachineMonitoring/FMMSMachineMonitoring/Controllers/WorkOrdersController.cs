@@ -1,9 +1,9 @@
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using FMMSMachineMonitoring.Models;
 using FMMSMachineMonitoring.Data;
+using FMMSMachineMonitoring.Models;
+using FMMSMachineMonitoring.Models.Enums;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 public class WorkOrdersController : Controller
 {
@@ -15,7 +15,7 @@ public class WorkOrdersController : Controller
     }
 
     // GET: WORKORDERS
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index()
     {
         return View(await _context.WorkOrders.ToListAsync());
     }
@@ -41,7 +41,7 @@ public class WorkOrdersController : Controller
     // GET: WORKORDERS/Create
     public IActionResult Create()
     {
-        ViewData["MachineId"] = new SelectList(_context.Machines,"Id", "Code");
+        ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Code");
         return View();
     }
 
@@ -95,7 +95,35 @@ public class WorkOrdersController : Controller
         {
             try
             {
-                _context.Update(workorder);
+                var existingWorkOrder = await _context.WorkOrders.FindAsync(workorder.Id);
+                if (existingWorkOrder == null)
+                {
+                    return NotFound();
+                }
+
+                //จำค่าเดิมไว้ก่อนลงค่าใหม่ - เพื่อใช้ตรวจสอบว่ามีการเปลี่ยนแปลงวันที่ปิดงานหรือไม่
+                bool wasOpenBefore = existingWorkOrder.ClosedDate == null;
+
+                existingWorkOrder.MachineId = workorder.MachineId;
+                existingWorkOrder.TechnicianId = workorder.TechnicianId;
+                existingWorkOrder.Description = workorder.Description;
+                existingWorkOrder.Urgency = workorder.Urgency;
+                existingWorkOrder.ClosedDate = workorder.ClosedDate;
+
+                //เช็คว่านี่คือจังหวะปิดใบงาน PM จริงไหม
+                if (wasOpenBefore && existingWorkOrder.ClosedDate != null && existingWorkOrder.Type == WorkOrderType.Preventive)
+                {
+                    //กำหนดวันที่ปิดงาน PM ให้กับตาราง MaintenanceSchedules ของเครื่องจักรนั้นๆ
+                    var scheduledTask = await _context.MaintenanceSchedules.FirstOrDefaultAsync(st => st.MachineId == existingWorkOrder.MachineId && st.IsActive);
+                    if(scheduledTask != null)
+                    {
+                        scheduledTask.LastCompletedDate = existingWorkOrder.ClosedDate;
+                        scheduledTask.NextDueDate = scheduledTask.NextDueDate.AddDays(scheduledTask.IntervalDays); //คำนวณวันที่ PM ครั้งถัดไป
+                        _context.Update(scheduledTask);
+                    }
+                }
+
+                _context.Update(existingWorkOrder);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
