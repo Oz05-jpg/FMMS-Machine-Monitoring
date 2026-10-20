@@ -1,0 +1,230 @@
+/* =====================================================================
+   MMS design tokens — extracted from "UI mockups needed/MMS Live Demo v2.dc.html"
+   (Claude Design export, sage-green theme). Extracted 2026-10-04.
+
+   Source of truth for colors / fonts / radius / shadows. Project-agnostic:
+   drop into wwwroot/css/ of either FMMS or MMS and load it BEFORE site.css,
+   AFTER bootstrap.min.css (the Bootstrap bridge at the bottom overrides --bs-*).
+
+   Fonts (add to _Layout.cshtml <head>):
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
+
+   Dark mode: set data-theme="dark" (mockup convention) or
+   data-bs-theme="dark" (Bootstrap 5.3 convention) on <html> — both work.
+
+   NOTE: the _ds/modernist folder next to the mockups is a DIFFERENT theme
+   (red, square corners) and is not used by Live Demo v2 — ignore it.
+   ===================================================================== */
+
+/* ---------- 1. Core tokens — light (default) ---------- */
+:root,
+[data-theme="light"],
+[data-bs-theme="light"] {
+  /* Type */
+  --font-body: "Google Sans", "IBM Plex Sans Thai", system-ui, sans-serif;
+  --font-heading: "Google Sans", "IBM Plex Sans Thai", system-ui, sans-serif;
+  --font-size-base: 15px;
+
+  /* Surfaces + text */
+  --color-bg: #F3F6F2;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #EEF3EC;
+  --color-text: #1E2B24;
+  --color-muted: #5A6B61;
+  --color-divider: #DCE4DA;
+  --color-border: #C9D4C7;
+
+  /* Accent (sage green) + ramp */
+  --color-accent: #4F7F62;
+  --color-on-accent: #FFFFFF;
+  --color-accent-50: #F4F9F5;
+  --color-accent-100: #E6F0E9;
+  --color-accent-200: #CFE2D5;
+  --color-accent-600: #436F55;
+  --color-accent-700: #365B45;
+  --color-accent-800: #284536;
+
+  --color-neutral-200: #E6ECE4;
+  --color-neutral-500: #98A69D;
+
+  /* Semantic status */
+  --color-danger: #B42318;
+  --color-danger-bg: #FCE9E7;
+  --color-warn: #8A5A00;
+  --color-warn-bg: #FBF0D6;
+  --color-success: #2E7A4E;
+  --color-info: #2F6690;
+
+  /* Shape + elevation */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 2px rgba(30,43,36,.08);
+  --shadow-md: 0 4px 14px rgba(30,43,36,.10);
+  --shadow-lg: 0 16px 40px rgba(30,43,36,.16);
+
+  /* ---------- 2. Data-viz tokens ----------
+     These were hard-coded hex values inside the mockup's chart scripts;
+     promoted to tokens so Razor views / Chart.js read one place. */
+
+  /* Health / trend: sparklines + machine health (>=75 good, >=50 warn, else bad) */
+  --chart-good: #4F9A6C;
+  --chart-warn: #D19A2E;
+  --chart-bad: #C4453A;
+
+  /* Row highlight for overdue WO / low-stock part */
+  --row-alert-bg: color-mix(in srgb, #DC2626 7%, transparent);
+  --text-alert: #C81E1E;  /* low-stock count, form errors */
+
+  /* Failure-cause categories (Dashboard "failure cause" chart) */
+  --cause-mechanical: #4F7F62;
+  --cause-electrical: #5B8DB8;
+  --cause-plc-control: #D19A2E;
+  --cause-hydraulic-pneumatic: #8FB59A;
+  --cause-operator-error: #B39C82;
+  --cause-other: #9AA59F;
+
+  /* RGB triplets of the colors above — Bootstrap's utilities and links
+     read --bs-*-rgb, not the hex vars, so these must stay in sync by hand. */
+  --rgb-accent: 79,127,98;
+  --rgb-accent-700: 54,91,69;
+  --rgb-accent-800: 40,69,54;
+  --rgb-danger: 180,35,24;
+  --rgb-success: 46,122,78;
+  --rgb-warn: 138,90,0;
+  --rgb-info: 47,102,144;
+}
+
+/* ---------- 3. Dark mode ---------- */
+[data-theme="dark"],
+[data-bs-theme="dark"] {
+  --color-bg: #141917;
+  --color-surface: #1C2320;
+  --color-surface-2: #232B27;
+  --color-text: #E4EBE6;
+  --color-muted: #A3B1A8;
+  --color-divider: #2F3A35;
+  --color-border: #3B4842;
+
+  --color-accent: #7FB392;
+  --color-on-accent: #0F2418;
+  --color-accent-50: #19211D;
+  --color-accent-100: #22342A;
+  --color-accent-200: #2B4436;
+  --color-accent-600: #93C2A3;
+  --color-accent-700: #A6D1B4;
+  --color-accent-800: #C4E4CF;
+
+  --color-neutral-200: #2C3531;
+  --color-neutral-500: #6F7D75;
+
+  --color-danger: #F08A80;
+  --color-danger-bg: #3A2220;
+  --color-warn: #E7BE6A;
+  --color-warn-bg: #3A3020;
+  --color-success: #7FC79A;
+  --color-info: #8DB8DE;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-md: 0 4px 14px rgba(0,0,0,.45);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,.55);
+
+  --rgb-accent: 127,179,146;
+  --rgb-accent-700: 166,209,180;
+  --rgb-accent-800: 196,228,207;
+  --rgb-danger: 240,138,128;
+  --rgb-success: 127,199,154;
+  --rgb-warn: 231,190,106;
+  --rgb-info: 141,184,222;
+  /* Data-viz tokens: mockup had no dark variants — same hex in both modes. */
+}
+
+/* ---------- 4. Bootstrap 5.3 bridge ----------
+   Maps the tokens onto Bootstrap's CSS variables so stock components
+   (.card, .btn, .table, .form-control, .alert, text-body-secondary...)
+   pick up the theme without per-page overrides. */
+:root,
+[data-theme="light"],
+[data-bs-theme="light"],
+[data-theme="dark"],
+[data-bs-theme="dark"] {
+  --bs-body-font-family: var(--font-body);
+  --bs-body-font-size: var(--font-size-base);
+  --bs-body-bg: var(--color-bg);
+  --bs-body-color: var(--color-text);
+  --bs-secondary-color: var(--color-muted);
+  --bs-tertiary-bg: var(--color-surface-2);
+  --bs-border-color: var(--color-divider);
+  --bs-border-radius-sm: var(--radius-sm);
+  --bs-border-radius: var(--radius-md);
+  --bs-border-radius-lg: var(--radius-lg);
+  --bs-box-shadow-sm: var(--shadow-sm);
+  --bs-box-shadow: var(--shadow-md);
+  --bs-box-shadow-lg: var(--shadow-lg);
+
+  --bs-primary: var(--color-accent);
+  --bs-success: var(--color-success);
+  --bs-danger: var(--color-danger);
+  --bs-warning: var(--color-warn);
+  --bs-info: var(--color-info);
+
+  --bs-primary-rgb: var(--rgb-accent);
+  --bs-success-rgb: var(--rgb-success);
+  --bs-danger-rgb: var(--rgb-danger);
+  --bs-warning-rgb: var(--rgb-warn);
+  --bs-info-rgb: var(--rgb-info);
+
+  --bs-link-color: var(--color-accent-700);
+  --bs-link-hover-color: var(--color-accent-800);
+  --bs-link-color-rgb: var(--rgb-accent-700);
+  --bs-link-hover-color-rgb: var(--rgb-accent-800);
+  --bs-focus-ring-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+
+  /* So a nested theme block (e.g. a dark card on a light page) also flips
+     its text color — Bootstrap only sets color on <body>. */
+  color: var(--bs-body-color);
+}
+
+/* Components that hard-code colors in Bootstrap's compiled CSS need
+   explicit overrides (Bootstrap reads --bs-primary-rgb, not --bs-primary). */
+.card {
+  --bs-card-bg: var(--color-surface);
+  --bs-card-border-color: var(--color-divider);
+}
+.btn-primary {
+  --bs-btn-bg: var(--color-accent);
+  --bs-btn-border-color: var(--color-accent);
+  --bs-btn-color: var(--color-on-accent);
+  --bs-btn-hover-bg: var(--color-accent-600);
+  --bs-btn-hover-border-color: var(--color-accent-600);
+  --bs-btn-hover-color: var(--color-on-accent);
+  --bs-btn-active-bg: var(--color-accent-700);
+  --bs-btn-active-border-color: var(--color-accent-700);
+  --bs-btn-active-color: var(--color-on-accent);
+}
+.table {
+  --bs-table-bg: var(--color-surface);
+  --bs-table-color: var(--color-text);
+  --bs-table-border-color: var(--color-divider);
+}
+
+/* ---------- 5. Base (mirrors the mockup's @layer base) ---------- */
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: 1.625;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.375;
+  margin: 0 0 .5rem;
+}
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+  outline-offset: 2px;
+}
+::selection { background: var(--color-accent-200); }
