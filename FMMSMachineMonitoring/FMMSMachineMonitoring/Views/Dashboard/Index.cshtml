@@ -11,7 +11,7 @@
     </div>
 }
 
-<table>
+<table class="table ">
     <thead>
         <tr>
             <th>Urgency</th>
@@ -26,5 +26,25 @@
                 <td>@item.Value</td>
             </tr>
         }
+        
     </tbody>
-</table>  
+    
+</table> 
+<table class ="table">
+    <thead>
+        <tr>
+            <th>Machine</th>
+            <th>MTTR(Hours)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.MttrByMachine)
+        {
+            <tr>
+                <td>@item.MachineCode</td>
+                <td>@item.MttrHours.ToString("0.0")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<p class="text-muted small">MTTR นับจากเปิดใบงานถึงปิดใบงาน (รวมเวลารอช่าง)</p>

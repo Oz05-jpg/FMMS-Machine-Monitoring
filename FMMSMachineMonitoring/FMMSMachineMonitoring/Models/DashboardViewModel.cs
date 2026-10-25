@@ -7,5 +7,9 @@ namespace FMMSMachineMonitoring.Models
         public required List<Machine> Machines { get; set; }
 
         public Dictionary<UrgencyStatus, int> OpenWorkOrderCounts { get; set; } = new();
+
+        public List<MachineMttr> MttrByMachine { get; set; } = new();
+
+
     }
 }
