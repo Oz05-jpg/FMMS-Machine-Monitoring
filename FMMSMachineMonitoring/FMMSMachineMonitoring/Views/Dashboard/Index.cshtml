@@ -2,12 +2,14 @@
 <h1>FMMS Dashboard</h1>
 @foreach (var machine in Model.Machines)
 {
-    <div class="machine-card">
-        <h2>@machine.Name (@machine.Code)</h2>
-        <p>Model: @machine.Model</p>
-        <p>Location: @machine.Location</p>
-        <p>Install Date: @machine.InstallDate.ToShortDateString()</p>
-        <p>Status: @machine.Status</p>
+    <div class="col-md-4">
+        <div class="machine-card">
+            <h2>@machine.Name (@machine.Code)</h2>
+            <p>Model: @machine.Model</p>
+            <p>Location: @machine.Location</p>
+            <p>Install Date: @machine.InstallDate.ToShortDateString()</p>
+            <p>Status: @machine.Status</p>
+        </div>
     </div>
 }
 
@@ -29,49 +31,61 @@
         
     </tbody>
     
-</table> 
-<table class ="table">
-    <thead>
-        <tr>
-            <th>Machine</th>
-            <th>MTTR(Hours)</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.MttrByMachine)
-        {
-            <tr>
-                <td>@item.MachineCode</td>
-                <td>@item.MttrHours.ToString("0.0")</td>
-            </tr>
-        }
-    </tbody>
 </table>
-<p class="text-muted small">MTTR นับจากเปิดใบงานถึงปิดใบงาน (รวมเวลารอช่าง)</p>
+<div class="card">
+    <div class="card-header">เวลาซ่อมเฉลี่ยต่อเครื่อง (MTTR)</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Machine</th>
+                            <th>MTTR(Hours)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.MttrByMachine)
+                        {
+                            <tr>
+                                <td>@item.MachineCode</td>
+                                <td>@item.MttrHours.ToString("0.0")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <p class="text-muted small">
+                    MTTR นับจากเปิดใบงานถึงปิดใบงาน (รวมเวลารอช่าง)
+                </p>
+            </div>
+                <div class="col-md-6">
+                    <canvas id="mttrChart" width="400" height="200"></canvas>
+                    @section Scripts {
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+                        <script>
+                                                const labels = @Html.Raw(Json.Serialize(Model.MttrByMachine.Select(m => m.MachineCode)));
+                                                const values = @Html.Raw(Json.Serialize(Model.MttrByMachine.Select(m => m.MttrHours)));
+                                                new Chart(document.getElementById('mttrChart'), {
+                                                    type: 'bar',
+                                                    data: {
+                                                        labels: labels,
+                                                        datasets: [{
+                                                            label: 'MTTR (Hours)',
+                                                            data: values
+                                                        }]
+                                                    },
+                                                    options: {
+                                                        scales: {
+                                                            y: { title: { display: true, text: 'MTTR (Hours)' } }
+                                                        }
+                                                    }
+                                                });
+                        </script>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<canvas id="mttrChart" width="400" height="200"></canvas>
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-        <script>
-            const labels = @Html.Raw(Json.Serialize(Model.MttrByMachine.Select(m => m.MachineCode)));
-            const values = @Html.Raw(Json.Serialize(Model.MttrByMachine.Select(m => m.MttrHours)));
-        new Chart(document.getElementById('mttrChart'), {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'MTTR (Hours)',
-                    data: values,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: { title: { display: true, text: 'MTTR (Hours)' }
-                }
-            }
-        });
-        </script>
-}
+           
