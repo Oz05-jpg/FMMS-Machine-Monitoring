@@ -48,3 +48,30 @@
     </tbody>
 </table>
 <p class="text-muted small">MTTR นับจากเปิดใบงานถึงปิดใบงาน (รวมเวลารอช่าง)</p>
+
+<canvas id="mttrChart" width="400" height="200"></canvas>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+        <script>
+            const labels = @Html.Raw(Json.Serialize(Model.MttrByMachine.Select(m => m.MachineCode)));
+            const values = @Html.Raw(Json.Serialize(Model.MttrByMachine.Select(m => m.MttrHours)));
+        new Chart(document.getElementById('mttrChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'MTTR (Hours)',
+                    data: values,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { title: { display: true, text: 'MTTR (Hours)' }
+                }
+            }
+        });
+        </script>
+}
