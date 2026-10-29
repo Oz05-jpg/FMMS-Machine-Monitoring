@@ -6,6 +6,8 @@ erDiagram
     TECHNICIAN |o--o{ WORKORDER : has
     MACHINE ||--o{ SENSORREADING : records
     MACHINE ||--o{ ALERT : triggers
+    MACHINE ||--o{ MAINTENANCESCHEDULE : has
+    ALERT |o--o{ WORKORDER : creates  
 
     MACHINE {
         int Id PK
@@ -25,8 +27,10 @@ erDiagram
         int Id PK
         int MachineId FK
         int TechnicianId FK
+        int AlertId FK
         string Description
         UrgencyStatus Urgency
+        WorkOrderType Type
         DateTime CreatedDate
         DateTime ClosedDate
     }
@@ -46,4 +50,13 @@ erDiagram
         AlertSeverity Severity
         DateTime DetectedAt
     }
+    MAINTENANCESCHEDULE {
+        int Id PK
+        int MachineId FK
+        int IntervalDays
+        DateTime NextDueDate
+        DateTime LastCompletedDate
+        bool IsActive
+    }
+    
 ```
