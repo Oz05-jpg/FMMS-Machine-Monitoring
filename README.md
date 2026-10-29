@@ -53,11 +53,11 @@ Built against the classic 6-phase SDLC (Planning & Requirement Analysis → Requ
 
 - [x] **[Planning]** Domain research, business context, and process flowcharts
 - [x] **[Requirements]** Requirement scope and user roles defined
-- [x] **[Design]** Database design (ER diagram) — [`docs/er-diagram.md`](docs/er-diagram.md) (Machine, Technician, WorkOrder, SensorReading)
+- [x] **[Design]** Database design (ER diagram) — [docs/er-diagram.md](docs/er-diagram.md) (Machine, Technician, WorkOrder, SensorReading, Alert, MaintenanceSchedule)
 - [x] **[Build]** Machine Master CRUD
 - [x] **[Build]** Work Order Management (+ Technician)
-- [ ] **[Build]** Preventive Maintenance
-- [ ] **[Build]** Dashboard & Reports + mock IoT data
+- [x] **[Build]** Preventive Maintenance — recurring schedules + auto-generated work orders (management UI pending)
+- [x] **[Build]** Dashboard & Reports + mock IoT data — machine status cards, open work orders by urgency, MTTR table + chart (MTBF pending)
 - [ ] **[Testing]** Integration/regression pass across all 4 V1 features
 - [ ] **[Deployment]** Deploy + demo video
 
