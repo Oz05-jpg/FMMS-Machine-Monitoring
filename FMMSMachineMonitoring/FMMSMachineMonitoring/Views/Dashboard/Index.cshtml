@@ -1,8 +1,22 @@
 ﻿@model FMMSMachineMonitoring.Models.DashboardViewModel
+@using FMMSMachineMonitoring.Models.Enums
 <h1>FMMS Dashboard</h1>
 <div class="row">
     @foreach (var machine in Model.Machines)
     {
+            var badgeClass = "";
+            if (machine.Status == MachineStatus.Running)
+            {
+                badgeClass = "badge bg-success";
+            }
+            else if (machine.Status == MachineStatus.Down)
+            {
+                badgeClass = "badge bg-danger";
+            }
+            else if (machine.Status == MachineStatus.UnderMaintenance)
+            {
+                badgeClass = "badge bg-warning";
+            }
 
         <div class="col-md-4">
             <div class="card">
@@ -13,7 +27,7 @@
                     <p>Model: @machine.Model</p>
                     <p>Location: @machine.Location</p>
                     <p>Install Date: @machine.InstallDate.ToShortDateString()</p>
-                    <p>Status: @machine.Status</p>
+                    <p>Status: <span class="@badgeClass">@machine.Status</span></p>
                 </div>
             </div>
         </div>
