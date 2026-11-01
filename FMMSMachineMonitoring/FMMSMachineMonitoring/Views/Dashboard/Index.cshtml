@@ -1,17 +1,24 @@
 ﻿@model FMMSMachineMonitoring.Models.DashboardViewModel
 <h1>FMMS Dashboard</h1>
-@foreach (var machine in Model.Machines)
-{
-    <div class="col-md-4">
-        <div class="machine-card">
-            <h2>@machine.Name (@machine.Code)</h2>
-            <p>Model: @machine.Model</p>
-            <p>Location: @machine.Location</p>
-            <p>Install Date: @machine.InstallDate.ToShortDateString()</p>
-            <p>Status: @machine.Status</p>
+<div class="row">
+    @foreach (var machine in Model.Machines)
+    {
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    @machine.Name (@machine.Code)
+                </div>
+                <div class="card-body">
+                    <p>Model: @machine.Model</p>
+                    <p>Location: @machine.Location</p>
+                    <p>Install Date: @machine.InstallDate.ToShortDateString()</p>
+                    <p>Status: @machine.Status</p>
+                </div>
+            </div>
         </div>
-    </div>
-}
+    }
+</div>
 
 <table class="table ">
     <thead>
@@ -28,9 +35,9 @@
                 <td>@item.Value</td>
             </tr>
         }
-        
+
     </tbody>
-    
+
 </table>
 <div class="card">
     <div class="card-header">เวลาซ่อมเฉลี่ยต่อเครื่อง (MTTR)</div>
@@ -58,31 +65,30 @@
                     MTTR นับจากเปิดใบงานถึงปิดใบงาน (รวมเวลารอช่าง)
                 </p>
             </div>
-                <div class="col-md-6">
-                    <canvas id="mttrChart" width="400" height="200"></canvas>
-                    @section Scripts {
-                        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-                        <script>
-                                                const labels = @Html.Raw(Json.Serialize(Model.MttrByMachine.Select(m => m.MachineCode)));
-                                                const values = @Html.Raw(Json.Serialize(Model.MttrByMachine.Select(m => m.MttrHours)));
-                                                new Chart(document.getElementById('mttrChart'), {
-                                                    type: 'bar',
-                                                    data: {
-                                                        labels: labels,
-                                                        datasets: [{
-                                                            label: 'MTTR (Hours)',
-                                                            data: values
-                                                        }]
-                                                    },
-                                                    options: {
-                                                        scales: {
-                                                            y: { title: { display: true, text: 'MTTR (Hours)' } }
-                                                        }
-                                                    }
-                                                });
-                        </script>
-                    }
-                </div>
+            <div class="col-md-6">
+                <canvas id="mttrChart" width="400" height="200"></canvas>
+                @section Scripts {
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+                    <script>
+                                        const labels = @Html.Raw(Json.Serialize(Model.MttrByMachine.Select(m => m.MachineCode)));
+                                        const values = @Html.Raw(Json.Serialize(Model.MttrByMachine.Select(m => m.MttrHours)));
+                                        new Chart(document.getElementById('mttrChart'), {
+                                            type: 'bar',
+                                            data: {
+                                                labels: labels,
+                                                datasets: [{
+                                                    label: 'MTTR (Hours)',
+                                                    data: values
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    y: { title: { display: true, text: 'MTTR (Hours)' } }
+                                                }
+                                            }
+                                        });
+                    </script>
+                }
             </div>
         </div>
     </div>
