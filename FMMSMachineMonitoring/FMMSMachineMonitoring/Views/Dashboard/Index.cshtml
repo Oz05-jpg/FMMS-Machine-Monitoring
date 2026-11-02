@@ -4,19 +4,19 @@
 <div class="row">
     @foreach (var machine in Model.Machines)
     {
-            var badgeClass = "";
-            if (machine.Status == MachineStatus.Running)
-            {
-                badgeClass = "badge bg-success";
-            }
-            else if (machine.Status == MachineStatus.Down)
-            {
-                badgeClass = "badge bg-danger";
-            }
-            else if (machine.Status == MachineStatus.UnderMaintenance)
-            {
-                badgeClass = "badge bg-warning";
-            }
+        var badgeClass = "";
+        if (machine.Status == MachineStatus.Running)
+        {
+            badgeClass = "badge bg-success";
+        }
+        else if (machine.Status == MachineStatus.Down)
+        {
+            badgeClass = "badge bg-danger";
+        }
+        else if (machine.Status == MachineStatus.UnderMaintenance)
+        {
+            badgeClass = "badge bg-warning";
+        }
 
         <div class="col-md-4">
             <div class="card">
@@ -34,26 +34,49 @@
     }
 </div>
 
-<table class="table ">
-    <thead>
-        <tr>
-            <th>Urgency</th>
-            <th>Count</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.OpenWorkOrderCounts)
-        {
+<div class="card mt-3">
+    <div class="card-header">
+        ใบงานที่ยังเปิด แยกตามความเร่งด่วน
+    </div>
+    <table class="table">
+        <thead>
             <tr>
-                <td>@item.Key</td>
-                <td>@item.Value</td>
+                <th>ความเร่งด่วน</th>
+                <th>จำนวน</th>
             </tr>
-        }
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OpenWorkOrderCounts)
+            {
 
-    </tbody>
 
-</table>
-<div class="card">
+                var badgeClass = "";
+                if (item.Key == UrgencyStatus.Urgent)
+                {
+                    badgeClass = "badge bg-danger";
+                }
+                else if (item.Key == UrgencyStatus.High)
+                {
+                    badgeClass = "badge bg-warning";
+                }
+                else if (item.Key == UrgencyStatus.Medium)
+                {
+                    badgeClass = "badge bg-info";
+                }
+                else if (item.Key == UrgencyStatus.Low)
+                {
+                    badgeClass = "badge bg-secondary";
+                }
+                <tr>
+                    <td><span class="@badgeClass">@item.Key</span></td>
+                    <td><span>@item.Value</span></td>
+                </tr>
+            }
+        </tbody>          
+    </table>
+</div>
+
+<div class="card mt-3">
     <div class="card-header">เวลาซ่อมเฉลี่ยต่อเครื่อง (MTTR)</div>
     <div class="card-body">
         <div class="row">
