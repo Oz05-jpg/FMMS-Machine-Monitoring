@@ -7,3 +7,5 @@ obj/
 *.sln.docstates
 *.csproj.Backup*.tmp
 docs/design/
+# Internal portfolio review (2026-11-05) — not for public repo
+FMMS_*.md
