@@ -6,17 +6,17 @@ This is a self-directed portfolio project, not a commissioned or deployed system
 
 **All sensor data is simulated.** A background service generates readings; there is no PLC, Node-RED or real IoT hardware connected.
 
-## How this repo relates to the other two FMMS repos
+## At a glance
 
-FMMS is one system idea across three separate repositories. They are separate codebases, not one project.
-
-| Repo | What it is |
+| | |
 |---|---|
-| [FMMS-System-Design](https://github.com/Oz05-jpg/FMMS-System-Design) | The specification: SRS, system analysis and design (IEEE-style). Its target architecture goes beyond what has been built. |
-| [FMMS-Core](https://github.com/Oz05-jpg/FMMS-Core) | A full-feature base built ticket by ticket while learning: Identity/Roles, JWT + refresh tokens, SignalR, Web API + Swagger, Excel/PDF export, xUnit + Moq, Docker, CI. |
-| **FMMS-Machine-Monitoring (this repo)** | Re-designed from that SRS with a deliberately smaller scope: machine monitoring, sensor simulation, alerts, preventive maintenance, work orders, dashboard. This is the main portfolio piece. |
+| What it is | Machine registry, simulated sensor data, threshold alerts, preventive-maintenance work orders and a dashboard, for a small sample plant (3 machines, 9 channels) |
+| Stack | C# · ASP.NET Core MVC (.NET 10) · EF Core · SQL Server · Razor + Bootstrap 5 |
+| Data | All simulated. No PLC or real hardware |
+| Not built yet | Login and roles, alerts page, automated tests, deployment (see [Feature status](#feature-status)) |
+| Where to start | [Feature status](#feature-status) → [Known limitations](#known-limitations) → [How to run](#how-to-run) |
 
-"Release 1" and "Release 2" below refer to releases of this repo only.
+Related repositories (specification and a learning base) are listed under [Related repositories](#related-repositories).
 
 ## Why this exists
 
@@ -81,11 +81,23 @@ Prerequisites: .NET 10 SDK, a SQL Server instance, and the `dotnet-ef` tool.
 
 Alerts and the work orders they create appear after a short while. The preventive-maintenance job runs once an hour, starting one hour after startup, and needs a `MaintenanceSchedule` row inserted directly in the database.
 
+## Related repositories
+
+FMMS is one system idea across three separate repositories. They are separate codebases, not one project.
+
+| Repo | What it is |
+|---|---|
+| [FMMS-System-Design](https://github.com/Oz05-jpg/FMMS-System-Design) | The specification: SRS, system analysis and design (IEEE-style). Its target architecture goes beyond what has been built. |
+| [FMMS-Core](https://github.com/Oz05-jpg/FMMS-Core) | A full-feature base built ticket by ticket while learning: Identity/Roles, JWT + refresh tokens, SignalR, Web API + Swagger, Excel/PDF export, xUnit + Moq, Docker, CI. |
+| **FMMS-Machine-Monitoring (this repo)** | Re-designed from that SRS with a deliberately smaller scope: machine monitoring, sensor simulation, alerts, preventive maintenance, work orders, dashboard. This is the main portfolio piece. |
+
+"Release 1" and "Release 2" in this README refer to releases of this repo only.
+
 ## Methodology
 
 Built against the classic 6-phase SDLC (Planning & Requirement Analysis → Requirements → Design → Build → Testing → Deployment & Maintenance) as a documentation overlay on top of a ticket-based workflow. Phase map and artifacts: [`docs/sdlc-plan.md`](docs/sdlc-plan.md).
 
-## Status
+## Roadmap
 
 - [x] **[Planning]** Domain research, business context, process flowcharts
 - [x] **[Requirements]** Scope defined — [docs/requirements.md](docs/requirements.md)
@@ -102,14 +114,10 @@ Built against the classic 6-phase SDLC (Planning & Requirement Analysis → Requ
 - [ ] **[Deployment]** #010 Deployment + demo — 21 Mar 2027
 - [ ] **[Build]** #011 IoT ingestion endpoint (`X-Api-Key`) — 31 Mar 2027
 
-## Screenshots
+## Documentation
 
-<!-- TODO: add dashboard screenshot (status cards, open work orders by urgency, MTTR chart) -->
-<!-- TODO: add work order list screenshot -->
+[Requirements](docs/requirements.md) · [ER diagram](docs/er-diagram.md) · [Architecture and flow diagrams](docs/architecture.md) · [SDLC plan](docs/sdlc-plan.md)
 
-## Diagrams
+<!-- TODO: add screenshots (dashboard: status cards, open work orders by urgency, MTTR chart; work order list) -->
+<!-- TODO: add an architecture diagram and an alert / work order flow diagram as committed images or Mermaid -->
 
-<!-- TODO: add architecture diagram (committed image or Mermaid) -->
-<!-- TODO: add work order / alert flow diagram -->
-
-Existing process and architecture diagrams: [`docs/architecture.md`](docs/architecture.md)
