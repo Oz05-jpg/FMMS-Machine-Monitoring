@@ -115,7 +115,7 @@ public class WorkOrdersController : Controller
                 {
                     //กำหนดวันที่ปิดงาน PM ให้กับตาราง MaintenanceSchedules ของเครื่องจักรนั้นๆ
                     var scheduledTask = await _context.MaintenanceSchedules.FirstOrDefaultAsync(st => st.MachineId == existingWorkOrder.MachineId && st.IsActive);
-                    if(scheduledTask != null)
+                    if (scheduledTask != null)
                     {
                         scheduledTask.LastCompletedDate = existingWorkOrder.ClosedDate;
                         scheduledTask.NextDueDate = scheduledTask.NextDueDate.AddDays(scheduledTask.IntervalDays); //คำนวณวันที่ PM ครั้งถัดไป

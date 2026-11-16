@@ -219,7 +219,7 @@ namespace FMMSMachineMonitoring.Services
                                         _warningAlertDurations[(machine.Id, channel)] = warningDuration + 1;
                                     }
 
-                                    // เช็คครบ 5 และสร้าง WO
+                                    // เช็คครบ 5 รอบ และสร้าง WO
                                     if (_warningAlertDurations[(machine.Id, channel)] >= 5)
                                     {
                                         bool hasWarningWorkOrder = await db.WorkOrders.AnyAsync(wo => wo.AlertId == activeAlert.Id && wo.ClosedDate == null);

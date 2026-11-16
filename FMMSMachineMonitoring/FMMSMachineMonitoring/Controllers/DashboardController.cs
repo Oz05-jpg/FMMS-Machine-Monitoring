@@ -39,12 +39,14 @@ namespace FMMSMachineMonitoring.Controllers
                 .Where(wo => wo.Type == WorkOrderType.Corrective && wo.ClosedDate != null)
                 .ToListAsync();
 
+            // ดึงข้อมูล MTTR (Mean Time To Repair) สำหรับแต่ละเครื่องจักร
             var mttrByMachine = closedRepairs
                 .GroupBy(wo => wo.MachineId)
                 .Select(g => new MachineMttr
                 {
                     MachineCode = machines.FirstOrDefault(m => m.Id == g.Key)?.Code ?? "เครื่องที่ถูกลบ",
-                    MttrHours = g.Average(wo => (wo.ClosedDate.Value - wo.CreatedDate).TotalHours)
+                    MttrHours = g.Average(wo =>
+                    (wo.ClosedDate.Value - wo.CreatedDate).TotalHours)
                 })
                 .ToList();
 
