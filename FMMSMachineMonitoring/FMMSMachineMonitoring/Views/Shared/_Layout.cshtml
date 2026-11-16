@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -37,6 +40,28 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
                         </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (SignInManager.IsSignedIn(User)) //ถ้า User ได้ทำการเข้าสู่ระบบแล้ว เราจะแสดงข้อความต้อนรับและปุ่มออกจากระบบ
+                            {
+                                <li class="nav-item">
+                                    <span class="navbar-text me-3">
+                                    สวัสดีคุณ @User.Identity?.Name
+                                    </span>
+                                </li>
+                                <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm">ออกจากระบบ</button>
+                                </form>
+                                </li>
+                            }
+                        else //ถ้า User ยังไม่ได้เข้าสู่ระบบ เราจะแสดงปุ่มเข้าสู่ระบบ
+                            {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">เข้าสู่ระบบ</a>
+                            </li>
+
+                            }
                     </ul>
                 </div>
             </div>

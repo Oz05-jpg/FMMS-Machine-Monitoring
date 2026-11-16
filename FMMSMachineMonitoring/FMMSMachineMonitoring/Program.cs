@@ -1,9 +1,11 @@
 
 using FMMSMachineMonitoring.Data;
 using FMMSMachineMonitoring.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -14,12 +16,22 @@ builder.Services.AddDbContext<AppDbContext>(option =>
         (builder.Configuration.GetConnectionString
         ("DefaultConnection")));
 
+// Add Identity
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>();
+
+
 // Service
 builder.Services.AddHostedService<SensorSimulationService>();
 builder.Services.AddHostedService<PreventiveMaintenanceService>();
 
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope()) //เราใช้ CreateScope() เพื่อสร้าง scope ใหม่สำหรับการเข้าถึง service provider
+{
+    await DbSeeder.SeedUsers(scope.ServiceProvider); //เราเรียกใช้เมธอด SeedUsers() ของคลาส DbSeeder เพื่อทำการ seed ข้อมูลผู้ใช้และ role ลงในฐานข้อมูล
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

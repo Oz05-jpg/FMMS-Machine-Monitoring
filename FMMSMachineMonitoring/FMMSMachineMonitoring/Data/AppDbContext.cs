@@ -1,9 +1,10 @@
 ﻿using FMMSMachineMonitoring.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FMMSMachineMonitoring.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -17,6 +18,7 @@ namespace FMMSMachineMonitoring.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Machine>()
                 .HasIndex(m => m.Code).IsUnique();
         }
