@@ -1,6 +1,7 @@
 
 using FMMSMachineMonitoring.Data;
 using FMMSMachineMonitoring.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,14 +39,14 @@ public class MachinesController : Controller
     }
 
     // GET: MACHINES/Create
+    [Authorize(Roles = "Supervisor")]
     public IActionResult Create()
     {
         return View();
     }
 
     // POST: MACHINES/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [Authorize(Roles = "Supervisor")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,Code,Name,Model,Location,InstallDate,Status")] Machine machine)
@@ -68,7 +69,8 @@ public class MachinesController : Controller
         return View(machine);
     }
 
-    // GET: MACHINES/Edit/5
+    // GET: MACHINES/Edit
+    [Authorize(Roles = "Supervisor")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -84,9 +86,8 @@ public class MachinesController : Controller
         return View(machine);
     }
 
-    // POST: MACHINES/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST: MACHINES/Edit
+    [Authorize(Roles = "Supervisor")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, [Bind("Id,Code,Name,Model,Location,InstallDate,Status")] Machine machine)
@@ -119,7 +120,8 @@ public class MachinesController : Controller
         return View(machine);
     }
 
-    // GET: MACHINES/Delete/5
+    // GET: MACHINES/Delete
+    [Authorize(Roles = "Supervisor")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -137,7 +139,8 @@ public class MachinesController : Controller
         return View(machine);
     }
 
-    // POST: MACHINES/Delete/5
+    // POST: MACHINES/Delete
+    [Authorize(Roles = "Supervisor")]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? id)

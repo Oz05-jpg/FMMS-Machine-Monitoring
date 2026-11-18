@@ -1,6 +1,7 @@
 
 using FMMSMachineMonitoring.Data;
 using FMMSMachineMonitoring.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,14 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 // Add Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
+
+// Authorization policy
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 
 // Service
@@ -43,11 +52,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapStaticAssets();
-
+app.UseAuthentication(); //ตรวจสอบการยืนยันตัวตนของผู้ใช้ก่อนเข้าถึง resource ต่าง ๆ ของแอปพลิเคชัน
+app.UseAuthorization(); //ตรวจสอบสิทธิ์ของผู้ใช้ก่อนเข้าถึง resource ต่าง ๆ ของแอปพลิเคชัน
+app.MapStaticAssets().AllowAnonymous(); //อนุญาตให้ผู้ใช้ที่ไม่ได้เข้าสู่ระบบสามารถเข้าถึง static assets ได้
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")

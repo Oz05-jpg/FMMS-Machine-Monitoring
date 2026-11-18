@@ -1,8 +1,10 @@
 ﻿using FMMSMachineMonitoring.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 namespace FMMSMachineMonitoring.Controllers
 {
+    [AllowAnonymous] //อนุญาตให้ผู้ใช้ที่ไม่ได้เข้าสู่ระบบสามารถเข้าถึง action ใน controller นี้ได้
     public class AccountController : Controller
     {
         private readonly SignInManager<IdentityUser> _signInManager;
@@ -48,6 +50,13 @@ namespace FMMSMachineMonitoring.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        // GET: /Account/AccessDenied
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }
