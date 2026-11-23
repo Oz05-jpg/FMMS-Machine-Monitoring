@@ -169,7 +169,12 @@ namespace FMMSMachineMonitoring.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Technicians");
                 });
@@ -447,6 +452,15 @@ namespace FMMSMachineMonitoring.Migrations
                         .IsRequired();
 
                     b.Navigation("Machine");
+                });
+
+            modelBuilder.Entity("FMMSMachineMonitoring.Models.Technician", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FMMSMachineMonitoring.Models.WorkOrder", b =>
