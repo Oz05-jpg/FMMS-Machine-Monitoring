@@ -1,6 +1,7 @@
 using FMMSMachineMonitoring.Data;
 using FMMSMachineMonitoring.Models;
 using FMMSMachineMonitoring.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,8 @@ public class WorkOrdersController : Controller
         return View(await _context.WorkOrders.ToListAsync());
     }
 
-    // GET: WORKORDERS/Details/5
+    // GET: WORKORDERS/Details/
+
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -39,6 +41,7 @@ public class WorkOrdersController : Controller
     }
 
     // GET: WORKORDERS/Create
+    [Authorize(Roles = "Operator,Supervisor")]
     public IActionResult Create()
     {
         ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Code");
@@ -46,8 +49,7 @@ public class WorkOrdersController : Controller
     }
 
     // POST: WORKORDERS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [Authorize(Roles = "Operator,Supervisor")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,MachineId,TechnicianId,Description,Urgency")] WorkOrder workorder)
@@ -63,7 +65,8 @@ public class WorkOrdersController : Controller
         return View(workorder);
     }
 
-    // GET: WORKORDERS/Edit/5
+    // GET: WORKORDERS/Edit/
+    [Authorize(Roles = "Technician,Supervisor")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -79,9 +82,8 @@ public class WorkOrdersController : Controller
         return View(workorder);
     }
 
-    // POST: WORKORDERS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST: WORKORDERS/Edit/
+    [Authorize(Roles = "Technician,Supervisor")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, [Bind("Id,MachineId,Machine,TechnicianId,Technician,Description,Urgency,CreatedDate,ClosedDate")] WorkOrder workorder)
@@ -142,7 +144,8 @@ public class WorkOrdersController : Controller
         return View(workorder);
     }
 
-    // GET: WORKORDERS/Delete/5
+    // GET: WORKORDERS/Delete/
+    [Authorize(Roles = "Supervisor")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -161,6 +164,7 @@ public class WorkOrdersController : Controller
     }
 
     // POST: WORKORDERS/Delete/5
+    [Authorize(Roles = "Supervisor")]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? id)
