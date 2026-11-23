@@ -40,6 +40,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope()) //เราใช้ CreateScope() เพื่อสร้าง scope ใหม่สำหรับการเข้าถึง service provider
 {
     await DbSeeder.SeedUsers(scope.ServiceProvider); //เราเรียกใช้เมธอด SeedUsers() ของคลาส DbSeeder เพื่อทำการ seed ข้อมูลผู้ใช้และ role ลงในฐานข้อมูล
+    await DbSeeder.SeedTechnicians(scope.ServiceProvider); //เราเรียกใช้เมธอด SeedTechnicians() ของคลาส DbSeeder เพื่อทำการ seed ข้อมูลช่างลงในฐานข้อมูล
 }
 
 // Configure the HTTP request pipeline.

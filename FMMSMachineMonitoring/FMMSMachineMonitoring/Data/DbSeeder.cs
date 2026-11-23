@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FMMSMachineMonitoring.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 namespace FMMSMachineMonitoring.Data
 {
     public static class DbSeeder
@@ -43,6 +45,30 @@ namespace FMMSMachineMonitoring.Data
 
                 }
             }
+        }
+
+        public static async Task SeedTechnicians(IServiceProvider service)
+        {
+            var context = service.GetRequiredService<AppDbContext>();
+            //ตรวจสอบว่ามี Technician อยู่แล้วหรือไม่ ถ้าไม่มีให้เพิ่ม Technician ใหม่
+            var userManager = service.GetRequiredService<UserManager<IdentityUser>>();
+
+            var techUser = await userManager.FindByNameAsync("TECH001"); //ค้นหา user ที่มีชื่อ "TECH001" ในฐานข้อมูล ถ้าเจอจะได้ object ของ user นั้น
+            if (techUser == null) return;//ถ้าไม่เจอ user "TECH001" ให้ return ออกจาก method
+
+            var exists = await context.Technicians.AnyAsync(t => t.UserId == techUser.Id); //ตรวจสอบว่ามี Technician ที่มี UserId ตรงกับ Id ของ user "TECH001"
+            if (!exists) //ถ้าไม่มี Technician ที่มี UserId ตรงกับ Id ของ user "TECH001" ให้เพิ่ม Technician ใหม่
+            {
+                context.Technicians.Add(new Technician
+                {
+                    Name = "สมชาย ใจดี",
+                    Specialization = "เครื่องจักรกล",
+                    UserId = techUser.Id
+                });
+                await context.SaveChangesAsync();
+            }
+
+
         }
 
     }
