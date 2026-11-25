@@ -2,6 +2,7 @@ using FMMSMachineMonitoring.Data;
 using FMMSMachineMonitoring.Models;
 using FMMSMachineMonitoring.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +10,12 @@ using Microsoft.EntityFrameworkCore;
 public class WorkOrdersController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public WorkOrdersController(AppDbContext context)
+    public WorkOrdersController(AppDbContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
     // GET: WORKORDERS
@@ -79,6 +82,16 @@ public class WorkOrdersController : Controller
         {
             return NotFound();
         }
+
+        var userId = _userManager.GetUserId(User);
+        var technician = await _context.Technicians.FirstOrDefaultAsync(t => t.UserId == userId);
+        if (User.IsInRole("Technician"))
+        {
+            if (technician == null || workorder.TechnicianId != technician.Id)//เลือกใช้ workorder เพราะมันมาจาก FindAsync ซึ่งเป็นใบงานที่มีอยู่ในฐานข้อมูล ไม่ใช่ใบงานที่ถูกส่งมาจากฟอร์ม
+            {
+                return Forbid(); // ถ้าไม่พบช่าง หรือ ใบงานไม่ใช่ของช่างคนนี้ ให้ปฏิเสธการเข้าถึง
+            }
+        }
         return View(workorder);
     }
 
@@ -96,20 +109,37 @@ public class WorkOrdersController : Controller
         if (ModelState.IsValid)
         {
             try
-            {
+            {   //ถ้าพบใบงานที่มีอยู่ในฐานข้อมูลและทำการอัปเดตข้อมูลใบงานนั้น
                 var existingWorkOrder = await _context.WorkOrders.FindAsync(workorder.Id);
                 if (existingWorkOrder == null)
                 {
                     return NotFound();
                 }
 
+                //เช็คสิทธิ์ของผู้ใช้ที่กำลังเข้าสู่ระบบที่ส่งคำขอแก้ไขใบงานนี้
+                var userId = _userManager.GetUserId(User);
+                var technician = await _context.Technicians.FirstOrDefaultAsync(t => t.UserId == userId);
+                if (User.IsInRole("Technician"))
+                {
+                    if (technician == null || existingWorkOrder.TechnicianId != technician.Id)//เลือกใช้ existingWorkOrder เพราะเราต้องการตรวจสอบใบงานที่มีอยู่ในฐานข้อมูล ไม่ใช่ใบงานที่ถูกส่งมาจากฟอร์ม
+                    {
+                        return Forbid(); // ถ้าไม่พบช่าง หรือ ใบงานไม่ใช่ของช่างคนนี้ ให้ปฏิเสธการเข้าถึง
+                    }
+                }
+
                 //จำค่าเดิมไว้ก่อนลงค่าใหม่ - เพื่อใช้ตรวจสอบว่ามีการเปลี่ยนแปลงวันที่ปิดงานหรือไม่
                 bool wasOpenBefore = existingWorkOrder.ClosedDate == null;
 
-                existingWorkOrder.MachineId = workorder.MachineId;
-                existingWorkOrder.TechnicianId = workorder.TechnicianId;
+                //ถ้าเป็น Role Supervisor สามารถแก้ไขข้อมูล MachineId, TechnicianId และ Urgency ได้ แต่ถ้าเป็น Role Technician จะไม่สามารถแก้ไขข้อมูลเหล่านี้ได้
+                if (!User.IsInRole("Technician"))
+                {
+                    existingWorkOrder.MachineId = workorder.MachineId;
+                    existingWorkOrder.TechnicianId = workorder.TechnicianId;
+                    existingWorkOrder.Urgency = workorder.Urgency;
+                }
+
+                //ช่างเทคนิคสามารถแก้ไขคำอธิบายและวันที่ปิดงานได้เท่านั้น แต่ไม่สามารถแก้ไขข้อมูลอื่นๆ ได้
                 existingWorkOrder.Description = workorder.Description;
-                existingWorkOrder.Urgency = workorder.Urgency;
                 existingWorkOrder.ClosedDate = workorder.ClosedDate;
 
                 //เช็คว่านี่คือจังหวะปิดใบงาน PM จริงไหม
